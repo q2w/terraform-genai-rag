@@ -125,3 +125,26 @@ variable "env_secret_vars" {
   description = "[Beta] Environment variables (Secret Manager)"
   default     = []
 }
+
+variable "startup_probe" {
+  type = object({
+    failure_threshold     = optional(number, null)
+    initial_delay_seconds = optional(number, null)
+    timeout_seconds       = optional(number, null)
+    period_seconds        = optional(number, null)
+    http_get = optional(object({
+      path = optional(string)
+      http_headers = optional(list(object({
+        name  = string
+        value = string
+      })), null)
+    }), null)
+  })
+  default     = null
+  description = <<-EOF
+    Startup probe of application within the container.
+    All other probes are disabled if a startup probe is provided, until it succeeds.
+    Container will not be added to service endpoints if the probe fails.
+    More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+  EOF
+}
