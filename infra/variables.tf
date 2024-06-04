@@ -237,3 +237,13 @@ variable "terraform-genai-rag-retrieval-startup_probe" {
     failure_threshold     = 10
   }
 }
+
+variable "terraform-genai-rag-database-enable_google_ml_integration" {
+  type = bool
+  default = true
+}
+
+variable "terraform-genai-rag-database-database_integration_roles" {
+  type = list(string)
+  default = ["roles/aiplatform.user"]
+}

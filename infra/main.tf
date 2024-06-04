@@ -18,9 +18,7 @@ module "terraform-genai-rag-vertexai" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
   version                     = "15.0.0"
   project_id  = var.project_id
-
   disable_services_on_destroy = var.terraform-genai-rag-vertexai-disable_services_on_destroy
-
   enable_apis = var.terraform-genai-rag-vertexai-enable_apis
   activate_apis = var.terraform-genai-rag-vertexai-activate_apis
 }
@@ -33,7 +31,7 @@ module "terraform-genai-rag-sa" {
 }
 
 module "terraform-genai-rag-database" {
-  source = "github.com/terraform-google-modules/terraform-google-sql-db//modules/postgresql?ref=v17.0.1"
+  source = "github.com/q2w/terraform-google-sql-db//modules/postgresql?ref=rag-ai"
   project_id = var.project_id
   region = var.region
   name = var.terraform-genai-rag-database-name
@@ -48,6 +46,8 @@ module "terraform-genai-rag-database" {
   tier = var.terraform-genai-rag-database-tier
   user_labels = var.labels
   user_name = var.terraform-genai-rag-database-user_name
+  enable_google_ml_integration = var.terraform-genai-rag-database-enable_google_ml_integration
+  database_integration_roles = var.terraform-genai-rag-database-database_integration_roles
 }
 
 module "terraform-genai-rag-secret" {
