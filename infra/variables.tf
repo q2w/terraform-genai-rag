@@ -22,199 +22,103 @@
 variable "project_id" {
   type        = string
   description = "Google Cloud Project ID"
-  default = "abhiwa-test-30112023"
 }
 
 variable "region" {
   type        = string
   description = "Google Cloud Region"
-  default     = "us-central1"
 }
 
-variable "labels" {
-  type        = map(string)
-  description = "A map of labels to apply to contained resources."
-  default     = { "genai-rag" = true }
+# vertexai input variables
+
+# service account variables
+variable "terraform_genai_rag_sa_name" {
+  type = string
 }
 
-variable "terraform-genai-rag-database-deletion_protection" {
+variable "terraform_genai_rag_sa_project_roles" {
+  type = list(string)
+}
+
+# Database variables
+variable "terraform_genai_rag_database_deletion_protection" {
   type        = string
   description = "Whether or not to protect Cloud SQL resources from deletion when solution is modified or changed."
-  default     = false
 }
 
-variable "terraform-genai-rag-frontend-image" {
-  type        = string
-  description = "The public Artifact Registry URI for the frontend container"
-  default     = "us-docker.pkg.dev/google-samples/containers/jss/rag-frontend-service:v0.0.1"
-}
-
-variable "terraform-genai-rag-retrieval-image" {
-  type        = string
-  description = "The public Artifact Registry URI for the retrieval container"
-  default     = "us-docker.pkg.dev/google-samples/containers/jss/rag-retrieval-service:v0.0.2"
-}
-
-variable "terraform-genai-rag-database-name" {
+variable "terraform_genai_rag_database_name" {
   type = string
-  default = "genai-rag-db"
 }
 
-variable "terraform-genai-rag-database-db_name" {
+variable "terraform_genai_rag_database_db_name" {
   type = string
-  default = "assistantdemo"
 }
 
-variable "terraform-genai-rag-database-user_name" {
+variable "terraform_genai_rag_database_user_name" {
   type = string
-  default = "default"
 }
 
-variable "terraform-genai-rag-vertexai-disable_services_on_destroy" {
+variable "terraform_genai_rag_database_database_version" {
   type = string
-  default = false
 }
 
-variable "terraform-genai-rag-vertexai-enable_apis" {
-  type        = string
-  description = "Whether or not to enable underlying apis in this solution. ."
-  default     = true
-}
-
-variable "terraform-genai-rag-vertexai-activate_apis" {
-  type = list(string)
-  default = [
-    "aiplatform.googleapis.com"
-  ]
-}
-
-variable "terraform-genai-rag-sa-name" {
-  type = string
-  default = "terraform-genai-rag-sa-name"
-}
-
-variable "terraform-genai-rag-sa-project_roles" {
-  type = list(string)
-  default = [
-    "roles/cloudsql.instanceUser",
-    "roles/cloudsql.client",
-    "roles/run.invoker",
-    "roles/aiplatform.user",
-    "roles/iam.serviceAccountTokenCreator"
-  ]
-}
-
-variable "terraform-genai-rag-database-database_version" {
-  type = string
-  default = "POSTGRES_15"
-}
-
-variable "terraform-genai-rag-database-disk_size" {
+variable "terraform_genai_rag_database_disk_size" {
   type = number
-  default = 10
 }
 
-variable "terraform-genai-rag-database-database_flags" {
+variable "terraform_genai_rag_database_database_flags" {
   type = list(object({ name : string, value : string }))
-  default =   [ {
-    name  = "cloudsql.iam_authentication"
-    value = "on"
-  }, {
-    name  = "cloudsql.enable_google_ml_integration"
-    value = "on"
-  }]
 }
 
-variable "terraform-genai-rag-database-user_deletion_policy" {
+variable "terraform_genai_rag_database_user_deletion_policy" {
   type = string
-  default = "ABANDON"
 }
 
-variable "terraform-genai-rag-database-database_deletion_policy" {
+variable "terraform_genai_rag_database_database_deletion_policy" {
   type = string
-  default = "ABANDON"
 }
 
-variable "terraform-genai-rag-database-enable_default_user" {
+variable "terraform_genai_rag_database_enable_default_user" {
   type = bool
-  default = true
 }
 
-variable "terraform-genai-rag-database-tier" {
+variable "terraform_genai_rag_database_tier" {
   type = string
-  default =   "db-custom-1-3840"
 }
 
-variable "terraform-genai-rag-secret-secrets-name" {
-  type = string
-  default = "genai-cloud-sql-password"
+variable "terraform_genai_rag_database_enable_google_ml_integration" {
+  type = bool
 }
 
-variable "terraform-genai-rag-secret-user_managed_replication" {
-  type = map(list(object({ location = string, kms_key_name = string })))
-  default = {
-    genai-cloud-sql-password = [
-      {
-        location = "us-central1"
-        kms_key_name = null
-      }
-    ]
-  }
-}
-
-variable "terraform-genai-rag-retrieval-volumes-name" {
-  type = string
-  default = "cloudsql"
-}
-
-variable "terraform-genai-rag-retrieval-volumes-mount_path" {
-  type = string
-  default = "/cloudsql"
-}
-
-variable "terraform-genai-rag-retrieval-env_vars" {
-  type = list(object({name: string, value: string}))
-  default = [
-    { name  = "APP_HOST", value = "0.0.0.0" },
-    { name  = "APP_PORT", value = "8080" },
-    { name  = "DB_KIND", value = "cloudsql-postgres" },
-    { name  = "DB_PROJECT", value = "abhiwa-test-30112023" },
-    { name  = "DB_REGION", value = "us-central1" },
-    { name  = "DB_INSTANCE", value = "genai-rag-db" },
-    { name  = "DB_NAME", value = "assistantdemo" },
-    { name  = "DB_USER", value = "default" }
-  ]
-}
-
-variable "terraform-genai-rag-retrieval-env_secret_vars" {
-  type = list(object({name: string, value_source = set(object({
-    secret_key_ref = map(string)
-  }))}))
-  default = [
-    {
-      name = "DB_PASSWORD",
-      value_source = [{ secret_key_ref: { "secret": "genai-cloud-sql-password", "version": "latest"}}]
-    }
-  ]
-}
-
-variable "terraform-genai-rag-retrieval-service_name" {
-  type = string
-  default = "retrieval-service"
-}
-
-variable "terraform-genai-rag-frontend-service_name" {
-  type = string
-  default = "frontend"
-}
-
-variable "terraform-genai-rag-frontend-members" {
+variable "terraform_genai_rag_database_database_integration_roles" {
   type = list(string)
-  default = [ "allUsers"]
 }
 
-variable "terraform-genai-rag-retrieval-startup_probe" {
-  type = object({
+variable "terraform_genai_rag_database_user_labels" {
+  type        = map(string)
+  description = "A map of labels to apply to contained resources."
+}
+
+# variables for secret-manager
+variable "terraform_genai_rag_secret_secrets" {
+  type = list(map(string))
+}
+
+variable "terraform_genai_rag_secret_user_managed_replication" {
+  type = map(list(object({ location = string, kms_key_name = string })))
+}
+
+# variables for terraform-genai-rag-retrieval
+variable "terraform_genai_rag_retrieval_volumes" {
+  type = list(object({
+  name = string }))
+}
+
+variable "terraform_genai_rag_retrieval_containers" {
+  type = list(object({ container_image : string, env_vars : map(string), env_secret_vars : map(object({
+    secret  = string
+    version = string
+    })), volume_mounts : list(object({ name : string, mount_path : string })), startup_probe : object({
     failure_threshold     = optional(number, null)
     initial_delay_seconds = optional(number, null)
     timeout_seconds       = optional(number, null)
@@ -226,24 +130,32 @@ variable "terraform-genai-rag-retrieval-startup_probe" {
         value = string
       })), null)
     }), null)
-  })
-  default = {
-    http_get = {
-      path = "/data/import"
-    }
-    initial_delay_seconds = 30
-    timeout_seconds       = 15
-    period_seconds        = 20
-    failure_threshold     = 10
-  }
+  }) }))
 }
 
-variable "terraform-genai-rag-database-enable_google_ml_integration" {
-  type = bool
-  default = true
+variable "terraform_genai_rag_retrieval_service_name" {
+  type = string
 }
 
-variable "terraform-genai-rag-database-database_integration_roles" {
+variable "terraform_genai_rag_retrieval_template_labels" {
+  type        = map(string)
+  description = "A map of labels to apply to contained resources."
+}
+
+# variables for frontend
+variable "terraform_genai_rag_frontend_template_labels" {
+  type        = map(string)
+  description = "A map of labels to apply to contained resources."
+}
+
+variable "terraform_genai_rag_frontend_service_name" {
+  type = string
+}
+
+variable "terraform_genai_rag_frontend_members" {
   type = list(string)
-  default = ["roles/aiplatform.user"]
+}
+
+variable "terraform_genai_rag_frontend_containers" {
+  type = list(object({ container_image : string, env_vars : map(string) }))
 }

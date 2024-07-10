@@ -14,79 +14,74 @@
  * limitations under the License.
  */
 
-module "terraform-genai-rag-vertexai" {
-  source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "15.0.0"
-  project_id  = var.project_id
-  disable_services_on_destroy = var.terraform-genai-rag-vertexai-disable_services_on_destroy
-  enable_apis = var.terraform-genai-rag-vertexai-enable_apis
-  activate_apis = var.terraform-genai-rag-vertexai-activate_apis
+module "terraform_genai_rag_vertexai" {
+  source     = "./modules/vertexai"
+  project_id = var.project_id
 }
 
-module "terraform-genai-rag-sa" {
-  source = "github.com/terraform-google-modules/terraform-google-service-accounts//modules/simple-sa?ref=master"
-  project_id = var.project_id
-  name = var.terraform-genai-rag-sa-name
-  project_roles = var.terraform-genai-rag-sa-project_roles
+module "terraform_genai_rag_sa" {
+  source        = "github.com/q2w/terraform-google-service-accounts//modules/simple-sa"
+  project_id    = var.project_id
+  name          = var.terraform_genai_rag_sa_name
+  project_roles = var.terraform_genai_rag_sa_project_roles
 }
 
-module "terraform-genai-rag-database" {
-  source = "github.com/q2w/terraform-google-sql-db//modules/postgresql?ref=rag-ai"
-  project_id = var.project_id
-  region = var.region
-  name = var.terraform-genai-rag-database-name
-  db_name = var.terraform-genai-rag-database-db_name
-  database_version = var.terraform-genai-rag-database-database_version
-  disk_size = var.terraform-genai-rag-database-disk_size
-  database_flags = var.terraform-genai-rag-database-database_flags
-  deletion_protection = var.terraform-genai-rag-database-deletion_protection
-  user_deletion_policy = var.terraform-genai-rag-database-user_deletion_policy
-  database_deletion_policy = var.terraform-genai-rag-database-database_deletion_policy
-  enable_default_user = var.terraform-genai-rag-database-enable_default_user
-  tier = var.terraform-genai-rag-database-tier
-  user_labels = var.labels
-  user_name = var.terraform-genai-rag-database-user_name
-  enable_google_ml_integration = var.terraform-genai-rag-database-enable_google_ml_integration
-  database_integration_roles = var.terraform-genai-rag-database-database_integration_roles
+module "terraform_genai_rag_database" {
+  source                       = "github.com/q2w/terraform-google-sql-db//modules/postgresql"
+  project_id                   = var.project_id
+  region                       = var.region
+  name                         = var.terraform_genai_rag_database_name
+  db_name                      = var.terraform_genai_rag_database_db_name
+  database_version             = var.terraform_genai_rag_database_database_version
+  disk_size                    = var.terraform_genai_rag_database_disk_size
+  database_flags               = var.terraform_genai_rag_database_database_flags
+  deletion_protection          = var.terraform_genai_rag_database_deletion_protection
+  user_deletion_policy         = var.terraform_genai_rag_database_user_deletion_policy
+  database_deletion_policy     = var.terraform_genai_rag_database_database_deletion_policy
+  enable_default_user          = var.terraform_genai_rag_database_enable_default_user
+  tier                         = var.terraform_genai_rag_database_tier
+  user_labels                  = var.terraform_genai_rag_database_user_labels
+  user_name                    = var.terraform_genai_rag_database_user_name
+  enable_google_ml_integration = var.terraform_genai_rag_database_enable_google_ml_integration
+  database_integration_roles   = var.terraform_genai_rag_database_database_integration_roles
 }
 
-module "terraform-genai-rag-secret" {
-  source = "github.com/GoogleCloudPlatform/terraform-google-secret-manager?ref=main"
-  project_id = var.project_id
-  secrets = [ { name: var.terraform-genai-rag-secret-secrets-name, secret_data: module.terraform-genai-rag-database.generated_user_password} ]
-  secret_accessors_list = [ "serviceAccount:${module.terraform-genai-rag-sa.email}"]
-  user_managed_replication = var.terraform-genai-rag-secret-user_managed_replication
+module "terraform_genai_rag_secret" {
+  source                   = "github.com/q2w/terraform-google-secret-manager"
+  project_id               = var.project_id
+  secrets                  = [{ name : var.terraform_genai_rag_secret_secrets[0].name, secret_data : module.terraform_genai_rag_database.generated_user_password }]
+  secret_accessors_list    = [module.terraform_genai_rag_sa.iam_email]
+  user_managed_replication = var.terraform_genai_rag_secret_user_managed_replication
 }
 
-module "terraform-genai-rag-retrieval" {
-  source = "./modules/cloud-run-service-v2"
-  service_name = var.terraform-genai-rag-retrieval-service_name
-  location = var.region
-  project_id = var.project_id
-  service_account_email = module.terraform-genai-rag-sa.email
-  labels = var.labels
-  image = var.terraform-genai-rag-retrieval-image
-  volumes = [ { name: var.terraform-genai-rag-retrieval-volumes-name, cloud_sql_instance: { instances: module.terraform-genai-rag-database.instance_connection_name }}]
-  volume_mounts = [ { name: var.terraform-genai-rag-retrieval-volumes-name, mount_path: var.terraform-genai-rag-retrieval-volumes-mount_path}]
-  env_vars = var.terraform-genai-rag-retrieval-env_vars
-  env_secret_vars = var.terraform-genai-rag-retrieval-env_secret_vars
-  startup_probe = var.terraform-genai-rag-retrieval-startup_probe
+module "terraform_genai_rag_retrieval" {
+  source          = "github.com/q2w/terraform-google-cloud-run//modules/v2"
+  service_name    = var.terraform_genai_rag_retrieval_service_name
+  location        = var.region
+  project_id      = var.project_id
+  service_account = module.terraform_genai_rag_sa.email
+  template_labels = var.terraform_genai_rag_retrieval_template_labels
+  volumes         = [{ name : var.terraform_genai_rag_retrieval_volumes[0].name, cloud_sql_instance : { instances : module.terraform_genai_rag_database.instance_connection_name } }]
+  containers      = var.terraform_genai_rag_retrieval_containers
 }
 
+module "terraform_genai_rag_frontend" {
+  source          = "github.com/q2w/terraform-google-cloud-run//modules/v2"
+  service_name    = var.terraform_genai_rag_frontend_service_name
+  location        = var.region
+  project_id      = var.project_id
+  service_account = module.terraform_genai_rag_sa.email
+  template_labels = var.terraform_genai_rag_frontend_template_labels
 
-module "terraform-genai-rag-frontend" {
-  source = "./modules/cloud-run-service-v2"
-  service_name = var.terraform-genai-rag-frontend-service_name
-  location = var.region
-  project_id = var.project_id
-  service_account_email = module.terraform-genai-rag-sa.email
-  labels = var.labels
-  image = var.terraform-genai-rag-frontend-image
-  env_vars = [
-    { name: "SERVICE_URL", value: module.terraform-genai-rag-retrieval.service_url },
-    { name: "SERVICE_ACCOUNT_EMAIL", value: module.terraform-genai-rag-sa.email },
-    { name  = "ORCHESTRATION_TYPE", value = "langchain-tools" },
-    { name  = "DEBUG", value = "False"}
+  containers = [
+    {
+      container_image : var.terraform_genai_rag_frontend_containers[0].container_image,
+      env_vars : merge(
+        module.terraform_genai_rag_sa.env_vars,
+        { "BACKEND_SERVICE_ENDPOINT" : module.terraform_genai_rag_retrieval.service_uri },
+        var.terraform_genai_rag_frontend_containers[0].env_vars
+      )
+    }
   ]
-  members = var.terraform-genai-rag-frontend-members
+  members = var.terraform_genai_rag_frontend_members
 }

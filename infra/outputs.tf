@@ -17,5 +17,5 @@
 
 output "deployment_ip_address" {
   description = "Web URL link"
-  value       = module.terraform-genai-rag-frontend.service_url
+  value       = module.terraform_genai_rag_frontend.service_uri
 }
