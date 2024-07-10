@@ -61,7 +61,7 @@ module "terraform_genai_rag_retrieval" {
   project_id      = var.project_id
   service_account = module.terraform_genai_rag_sa.email
   template_labels = var.terraform_genai_rag_retrieval_template_labels
-  volumes         = [{ name : var.terraform_genai_rag_retrieval_volumes[0].name, cloud_sql_instance : { instances : module.terraform_genai_rag_database.instance_connection_name } }]
+  volumes         = [{ name : var.terraform_genai_rag_retrieval_volumes[0].name, cloud_sql_instance : { instances : [ module.terraform_genai_rag_database.instance_connection_name ] } }]
   containers      = var.terraform_genai_rag_retrieval_containers
 }
 

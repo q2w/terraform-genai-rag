@@ -7,7 +7,8 @@ terraform_genai_rag_sa_project_roles = [
   "roles/cloudsql.client",
   "roles/run.invoker",
   "roles/aiplatform.user",
-  "roles/iam.serviceAccountTokenCreator"
+  "roles/iam.serviceAccountTokenCreator",
+  "roles/secretmanager.secretAccessor"
 ]
 
 terraform_genai_rag_database_deletion_protection      = false
