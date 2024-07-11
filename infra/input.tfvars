@@ -75,4 +75,4 @@ terraform_genai_rag_retrieval_template_labels = { "genai-rag" = true }
 terraform_genai_rag_frontend_template_labels = { "genai-rag" = true }
 terraform_genai_rag_frontend_service_name    = "frontend"
 terraform_genai_rag_frontend_members         = ["allUsers"]
-terraform_genai_rag_frontend_containers      = [{ container_image : "us-docker.pkg.dev/google-samples/containers/jss/rag-frontend-service:v0.0.1", env_vars : {} }]
+terraform_genai_rag_frontend_containers      = [{ container_image : "us-central1-docker.pkg.dev/abhiwa-test-30112023/cloud-run-source-deploy/genai-frontend-service:latest", env_vars : {} }]

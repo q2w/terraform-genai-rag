@@ -25,8 +25,8 @@ from langchain.tools import StructuredTool
 from pydantic.v1 import BaseModel, Field
 
 # URL to connect to the backend services
-BASE_URL = os.getenv("SERVICE_URL", default="127.0.0.1") # f"{SERVICE_URL}:8080"
-SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT_EMAIL", default=None)
+BASE_URL = os.getenv("BACKEND_SERVICE_ENDPOINT", default="127.0.0.1") # f"{SERVICE_URL}:8080"
+SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT", default=None)
 CREDENTIALS = None
 
 
