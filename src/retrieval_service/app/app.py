@@ -45,9 +45,10 @@ def parse_config() -> AppConfig:
     config["datastore"]["project"] = os.environ.get("DB_PROJECT", "my-project")
     config["datastore"]["region"] = os.environ.get("DB_REGION", "us-central1")
     config["datastore"]["instance"] = os.environ.get("DB_INSTANCE", "my-instance")
-    config["datastore"]["database"] = os.environ.get("DB_NAME", "assistantdemo")
-    config["datastore"]["user"] = os.environ.get("DB_USER", "postgres")
+    config["datastore"]["database"] = os.environ.get("database_postgresql_CLOUD_SQL_DATABASE_NAME", "assistantdemo")
+    config["datastore"]["user"] = os.environ.get("DB_USER", "default")
     config["datastore"]["password"] = os.environ.get("DB_PASSWORD", "password")
+    config["datastore"]["connection_name"] =  os.environ.get("database_postgresql_CLOUD_SQL_DATABASE_CONNECTION_NAME", "empty-connection-name")
     return AppConfig(**config)
 
 

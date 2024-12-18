@@ -39,6 +39,7 @@ class Config(BaseModel, datastore.AbstractConfig):
     user: str
     password: str
     database: str
+    connection_name: str
 
 
 class Client(datastore.Client[Config]):
@@ -59,7 +60,7 @@ class Client(datastore.Client[Config]):
             async with Connector(loop=loop) as connector:
                 conn: asyncpg.Connection = await connector.connect_async(
                     # Cloud SQL instance connection name
-                    f"{config.project}:{config.region}:{config.instance}",
+                    f"{config.connection_name}",
                     "asyncpg",
                     user=f"{config.user}",
                     password=f"{config.password}",
