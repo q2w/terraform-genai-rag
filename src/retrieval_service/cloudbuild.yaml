@@ -19,6 +19,6 @@ steps:
 - name: 'gcr.io/kaniko-project/executor:latest'
   args:
   - --dockerfile=Dockerfile
-  - --destination=us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/retrieval-service
+  - --destination=gcr.io/$PROJECT_ID/gen-ai-rag-retrieval-service:latest-03012025
   - --cache=true
   - --cache-ttl=6h
