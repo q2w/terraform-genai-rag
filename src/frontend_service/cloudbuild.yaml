@@ -22,3 +22,7 @@ steps:
   - --destination=gcr.io/$PROJECT_ID/gen-ai-rag-fe:latest-03012025
   - --cache=true
   - --cache-ttl=6h
+
+artifacts:
+  images:
+    - 'gcr.io/$PROJECT_ID/gen-ai-rag-fe:latest-03012025'
