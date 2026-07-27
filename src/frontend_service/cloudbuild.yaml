@@ -13,6 +13,9 @@
 # limitations under the License.
 
 steps:
+# If using subfolder from repo root to build, you need to specify the relative location for each stage
+# Kaniko: dockerfile location and context dir
+# General build step: dir: arg for step
 - name: 'gcr.io/kaniko-project/executor:latest'
   args:
   - --dockerfile=Dockerfile
